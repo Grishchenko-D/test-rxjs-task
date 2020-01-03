@@ -1,23 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
+import { interval, combineLatest } from 'rxjs';
+
 function App() {
+
+  const timerOne$ = interval(2000);
+  const timerTwo$ = interval(3000);
+  const timerThree$ = interval(4000);
+
+  const [data, setData] = useState('');
+
+  useEffect(() => {
+    const subscription = combineLatest(
+      timerOne$,
+      timerTwo$,
+      timerThree$,
+      (one, two, three) => {
+
+        return `Timer One (Proj) Latest: ${one}, 
+                Timer Two (Proj) Latest: ${two}, 
+                Timer Three (Proj) Latest: ${three}`;
+      }
+    ).subscribe((val) => {
+      console.log(val);
+      setData(val);
+    });
+
+    setTimeout(() => {
+      subscription.unsubscribe();
+    }, 16000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        {data}
       </header>
     </div>
   );
